@@ -195,7 +195,7 @@
 
       flake = {
         overlays.default = final: prev: {
-          nu-mcp = self.packages.default;
+          nu-mcp = self.packages.${final.system}.default;
         };
       };
     };
