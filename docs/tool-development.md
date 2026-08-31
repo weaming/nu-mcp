@@ -110,8 +110,9 @@ Content::text(output)
 # JSON output
 {repo: "weaming/nu-mcp", pr: 42} | to json
 
-# Structured data as JSON string
-{items: [{name: "app1"}, {name: "app2"}]} | to json --indent 2
+# Table data as FDF (preferred, see "Optional FDF Format" below)
+use ../_common/fdf.nu *
+[{name: "app1"}, {name: "app2"}] | to-fdf
 ```
 
 **IMPORTANT**: If your tool uses HTTP APIs that return JSON (via `http get`, `http post`, etc.), Nushell automatically parses the JSON response into nushell records/tables. You MUST convert back to JSON before returning:
@@ -122,9 +123,9 @@ export def list-items [] {
   http get "https://api.example.com/items"  # Returns nushell record
 }
 
-# ✅ CORRECT - Converts to JSON string
+# ✅ CORRECT - Converts to JSON string (or FDF for table data)
 export def list-items [] {
-  http get "https://api.example.com/items" | to json --indent 2
+  http get "https://api.example.com/items" | to json -r
 }
 ```
 

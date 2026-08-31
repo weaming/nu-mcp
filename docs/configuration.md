@@ -35,7 +35,7 @@ nu-mcp-core:
   command: "nu-mcp"
 ```
 
-The `run` tool maintains a persistent Nushell shell. Environment variables, aliases, and definitions persist across calls. Use the `reset` parameter to get a clean shell when needed.
+The `shell` tool maintains a persistent Nushell shell. Environment variables, aliases, and definitions persist across calls. Use the `reset` parameter to get a clean shell when needed. The `run` tool is stateless (fresh process per call).
 
 ### Extension Mode
 Tool-specific functionality:
