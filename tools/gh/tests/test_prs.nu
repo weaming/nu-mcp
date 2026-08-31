@@ -20,11 +20,10 @@ export def --env "test list-prs returns pr list" [] {
 
     use ../prs.nu list-prs
     let result = list-prs
-    let parsed = $result | from json
 
-    assert (($parsed | length) == 2) "Should return 2 PRs"
-    assert (($parsed | get 0 | get number) == 42) "First PR should be #42"
-    assert (($parsed | get 0 | get title) == "Add new feature") "First PR title"
+    assert ($result | str contains "@FDF1") "Should output FDF"
+    assert ($result | str contains "42") "Should contain PR number"
+    assert ($result | str contains "Add new feature") "Should contain PR title"
   }
 }
 
@@ -53,9 +52,9 @@ export def --env "test list-prs with state filter" [] {
 
     use ../prs.nu list-prs
     let result = list-prs --state open
-    let parsed = $result | from json
 
-    assert (($parsed | length) == 2) "Should return PRs"
+    assert ($result | str contains "@FDF1") "Should output FDF"
+    assert ($result | str contains "42") "Should contain PR number"
   }
 }
 

@@ -20,10 +20,10 @@ export def --env "test list-workflows returns workflow list" [] {
 
     use ../workflows.nu list-workflows
     let result = list-workflows
-    let parsed = $result | from json
 
-    assert (($parsed | length) == 2) "Should return 2 workflows"
-    assert (($parsed | get 0 | get name) == "CI") "First workflow should be CI"
+    assert ($result | str contains "@FDF1") "Should output FDF"
+    assert ($result | str contains "rows=2") "Should contain 2 rows"
+    assert ($result | str contains "CI") "Should contain workflow name"
   }
 }
 
@@ -77,10 +77,10 @@ export def --env "test list-workflow-runs returns runs" [] {
 
     use ../workflows.nu list-workflow-runs
     let result = list-workflow-runs
-    let parsed = $result | from json
 
-    assert (($parsed | length) == 2) "Should return 2 runs"
-    assert (($parsed | get 0 | get status) == "completed") "First run should be completed"
+    assert ($result | str contains "@FDF1") "Should output FDF"
+    assert ($result | str contains "rows=2") "Should contain 2 rows"
+    assert ($result | str contains "completed") "Should contain run status"
   }
 }
 
@@ -94,9 +94,9 @@ export def --env "test list-workflow-runs with limit" [] {
 
     use ../workflows.nu list-workflow-runs
     let result = list-workflow-runs --limit 5
-    let parsed = $result | from json
 
-    assert (($parsed | length) == 2) "Should return runs"
+    assert ($result | str contains "@FDF1") "Should output FDF"
+    assert ($result | str contains "rows=2") "Should contain 2 rows"
   }
 }
 
@@ -110,9 +110,9 @@ export def --env "test list-workflow-runs with workflow filter" [] {
 
     use ../workflows.nu list-workflow-runs
     let result = list-workflow-runs --workflow CI
-    let parsed = $result | from json
 
-    assert (($parsed | length) == 2) "Should return runs"
+    assert ($result | str contains "@FDF1") "Should output FDF"
+    assert ($result | str contains "rows=2") "Should contain 2 rows"
   }
 }
 
@@ -126,9 +126,9 @@ export def --env "test list-workflow-runs with branch filter" [] {
 
     use ../workflows.nu list-workflow-runs
     let result = list-workflow-runs --branch main
-    let parsed = $result | from json
 
-    assert (($parsed | length) == 2) "Should return runs"
+    assert ($result | str contains "@FDF1") "Should output FDF"
+    assert ($result | str contains "rows=2") "Should contain 2 rows"
   }
 }
 
@@ -142,9 +142,9 @@ export def --env "test list-workflow-runs with status filter" [] {
 
     use ../workflows.nu list-workflow-runs
     let result = list-workflow-runs --status completed
-    let parsed = $result | from json
 
-    assert (($parsed | length) == 2) "Should return runs"
+    assert ($result | str contains "@FDF1") "Should output FDF"
+    assert ($result | str contains "rows=2") "Should contain 2 rows"
   }
 }
 

@@ -38,14 +38,10 @@ export def --env "test find_pane_by_name finds matching pane" [] {
 
     use ../search.nu find_pane_by_name
     let result = find_pane_by_name dev "build"
-    let parsed = $result | from json
 
-    assert (($parsed | length) == 1) "Should find one pane"
-    let found = $parsed | get 0
-    assert ($found.title == "build") "Should have matching title"
-    assert ($found.window == "1") "Should be in window 1"
-    assert ($found.pane == "0") "Should be pane 0"
-    assert ($found.target == "dev:1.0") "Should have correct target"
+    assert ($result | str contains "rows=1") "Should find one pane"
+    assert ($result | str contains "build") "Should have matching title"
+    assert ($result | str contains "dev:1.0") "Should have correct target"
   }
 }
 
@@ -68,9 +64,8 @@ export def --env "test find_pane_by_name case insensitive" [] {
 
     use ../search.nu find_pane_by_name
     let result = find_pane_by_name dev "EDITOR"
-    let parsed = $result | from json
 
-    assert (($parsed | length) == 1) "Should find pane case-insensitively"
+    assert ($result | str contains "rows=1") "Should find pane case-insensitively"
   }
 }
 
@@ -122,9 +117,8 @@ export def --env "test find_pane_by_name multiple matches" [] {
 
     use ../search.nu find_pane_by_name
     let result = find_pane_by_name dev "test"
-    let parsed = $result | from json
 
-    assert (($parsed | length) == 2) "Should find both matches"
+    assert ($result | str contains "rows=2") "Should find both matches"
   }
 }
 
@@ -172,11 +166,9 @@ export def --env "test find_pane_by_context finds by command" [] {
 
     use ../search.nu find_pane_by_context
     let result = find_pane_by_context dev "cargo"
-    let parsed = $result | from json
 
-    assert (($parsed | length) == 1) "Should find by command"
-    let found = $parsed | get 0
-    assert ($found.command == "cargo") "Should match command"
+    assert ($result | str contains "rows=1") "Should find by command"
+    assert ($result | str contains "cargo") "Should match command"
   }
 }
 
@@ -199,9 +191,8 @@ export def --env "test find_pane_by_context finds by directory name" [] {
 
     use ../search.nu find_pane_by_context
     let result = find_pane_by_context dev "projects"
-    let parsed = $result | from json
 
-    assert (($parsed | length) == 1) "Should find by directory name"
+    assert ($result | str contains "rows=1") "Should find by directory name"
   }
 }
 
@@ -224,9 +215,8 @@ export def --env "test find_pane_by_context finds by path substring" [] {
 
     use ../search.nu find_pane_by_context
     let result = find_pane_by_context dev "code"
-    let parsed = $result | from json
 
-    assert (($parsed | length) == 1) "Should find by path substring"
+    assert ($result | str contains "rows=1") "Should find by path substring"
   }
 }
 
@@ -249,9 +239,8 @@ export def --env "test find_pane_by_context finds by title" [] {
 
     use ../search.nu find_pane_by_context
     let result = find_pane_by_context dev "editor"
-    let parsed = $result | from json
 
-    assert (($parsed | length) == 1) "Should find by title substring"
+    assert ($result | str contains "rows=1") "Should find by title substring"
   }
 }
 
@@ -274,9 +263,8 @@ export def --env "test find_pane_by_context case insensitive" [] {
 
     use ../search.nu find_pane_by_context
     let result = find_pane_by_context dev "FRONTEND"
-    let parsed = $result | from json
 
-    assert (($parsed | length) == 1) "Should be case insensitive"
+    assert ($result | str contains "rows=1") "Should be case insensitive"
   }
 }
 

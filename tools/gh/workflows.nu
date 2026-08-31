@@ -2,6 +2,7 @@
 # Functions for interacting with GitHub Actions workflows
 
 use utils.nu *
+use ../_common/fdf.nu *
 
 # List workflows in the repository
 export def list-workflows [
@@ -16,7 +17,7 @@ export def list-workflows [
     "id,name,path,state"
   ]
 
-  run-gh $args --path ($path | default "")
+  run-gh $args --path ($path | default "") | to-fdf
 }
 
 # List workflow runs with optional filtering
@@ -52,7 +53,7 @@ export def list-workflow-runs [
     $args = ($args | append ["--limit" ($limit | into string)])
   }
 
-  run-gh $args --path ($path | default "")
+  run-gh $args --path ($path | default "") | to-fdf
 }
 
 # Get details of a specific workflow run

@@ -2,6 +2,7 @@
 # Functions for interacting with GitHub Pull Requests
 
 use utils.nu *
+use ../_common/fdf.nu *
 
 # List pull requests in the repository
 export def list-prs [
@@ -36,7 +37,13 @@ export def list-prs [
     $args = ($args | append ["--limit" ($limit | into string)])
   }
 
-  run-gh $args --path ($path | default "")
+  let result = run-gh $args --path ($path | default "")
+  # Flatten nested author object (FDF only supports scalar columns)
+  try {
+    $result | from json | each {|pr| $pr | upsert author ($pr.author.login) } | to-fdf
+  } catch {
+    $result
+  }
 }
 
 # Get details of a specific pull request

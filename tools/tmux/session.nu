@@ -1,6 +1,7 @@
 # Session and listing functions for tmux
 
 use core.nu *
+use ../_common/fdf.nu *
 
 # List all tmux sessions with their windows and panes
 export def list_sessions [] {
@@ -68,7 +69,7 @@ export def list_sessions [] {
       }
     }
 
-    $all_items | to json --indent 2
+    $all_items | to-fdf
   } catch {
     "Error: Failed to list tmux sessions. Make sure tmux is running."
   }
@@ -264,7 +265,7 @@ export def list_panes [session: string] {
     }
 
     # Return panes as JSON
-    $all_panes | to json --indent 2
+    $all_panes | to-fdf
   } catch {
     $"Error: Failed to list panes for session '($session)'. Check that the session exists."
   }

@@ -4,68 +4,33 @@ Shared utilities for all MCP tools.
 
 ## Modules
 
-### `toon.nu` - TOON Encoder
+### `fdf.nu` - FDF/1 Encoder
 
-Token-Oriented Object Notation (TOON) encoder for reducing token usage by 30-60% compared to JSON.
-
-**Configuration:**
-
-- `MCP_TOON=true`: Enable TOON encoding (default: `false` - uses JSON)
+Encodes table data (lists of records) to FDF/1 format, reducing token usage by 35-55% compared to JSON.
+Requires the `fdf` CLI on PATH (https://github.com/weaming/ai-box/go/fdf).
 
 **Usage:**
 
 ```nushell
-use toon.nu *
+use ../_common/fdf.nu *
 
-# Check if TOON is enabled
-is-toon-enabled  # Returns true if MCP_TOON=true
-
-# Smart output: TOON if enabled, JSON otherwise
-[{id: 1, name: "Alice"}, {id: 2, name: "Bob"}] | to-output
-
-# Explicit TOON encoding
-[{id: 1, name: "Alice"}, {id: 2, name: "Bob"}] | to toon
+# Convert a table to FDF
+[{id: 1, name: "Alice"}, {id: 2, name: "Bob"}] | to-fdf
 # Output:
-# [2]{id,name}:
-#   1,Alice
-#   2,Bob
-
-# Encode record
-{name: "Alice", age: 30} | to toon
-# Output:
-# name: Alice
-# age: 30
+# # FDF/1 metadata; schema=name:type; |=field; ~=null; JSON quotes/escapes; i=int s=text
+# @FDF1|rows=2
+# id:i|name:s
+# 1|Alice
+# 2|Bob
 ```
+
+`to-fdf` accepts tables or JSON strings (e.g. `gh --json` output) and passes
+non-table input (error messages, single objects, formatted text) through unchanged.
 
 **Functions:**
 
-- `to toon`: Encode data to TOON format (always)
-- `to-output`: Smart encoding - TOON if `MCP_TOON=true`, JSON otherwise
-- `is-toon-enabled`: Check if TOON is enabled via environment variable
+- `to-fdf`: Convert table data to FDF/1 format
 
 **Specification:**
 
-Based on [TOON Specification v2.0](https://github.com/toon-format/spec/blob/main/SPEC.md).
-
-See official documentation at [https://toonformat.dev](https://toonformat.dev) for format details, use cases, and benchmarks.
-
-## Using in Tools
-
-Since tools are packaged separately by Nix, you cannot use relative imports. Instead, the common library is installed alongside other tools.
-
-**In development (relative import):**
-
-```nushell
-use ../_common/toon.nu *
-```
-
-**After Nix packaging:**
-
-Both `_common` and your tool will be in the same parent directory (`/nix/store/.../share/nushell/mcp-tools/`), so the relative import works at runtime.
-
-## Benefits
-
-- **Single source of truth**: Update once, all tools benefit
-- **Token efficiency**: TOON format reduces LLM token usage
-- **No duplication**: Common utilities in one place
-- **Immutable packaging**: Works with Nix's immutable store
+Based on [FDF/1 Flat Data Frame](https://github.com/weaming/ai-box/go/fdf).

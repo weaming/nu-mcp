@@ -141,45 +141,28 @@ export def list-items [] {
 
 The above creates double-wrapped content that clients cannot parse. Always return raw text/JSON and let the Rust server handle MCP formatting.
 
-### Optional TOON Format
+### Optional FDF Format
 
-Tools can optionally use TOON (Token-Oriented Object Notation) format for list operations to reduce token usage by 30-60% compared to JSON. TOON is particularly effective for uniform arrays of objects with primitive values.
+Tools can optionally use FDF/1 (Flat Data Frame) format for list operations to reduce token usage by 35-55% compared to JSON. FDF is particularly effective for uniform arrays of objects with primitive values. Requires the `fdf` CLI on PATH (https://github.com/weaming/ai-box/go/fdf).
 
-**Using the shared TOON encoder:**
+**Using the shared FDF encoder:**
 
 ```nushell
-# Import the shared TOON library
-use ../_common/toon.nu *
+# Import the shared FDF library
+use ../_common/fdf.nu *
 
-# Option 1: Smart output (TOON if MCP_TOON=true, JSON otherwise)
+# Convert table data to FDF (passes non-table input through unchanged)
 export def list-items [] {
   let items = http get "https://api.example.com/items"
-  $items | to-output  # Automatically chooses format based on MCP_TOON env var
-}
-
-# Option 2: Explicit TOON encoding (always TOON)
-export def list-items-toon [] {
-  let items = http get "https://api.example.com/items"
-  $items | to toon  # Always encodes to TOON format
-}
-
-# Option 3: Check environment and choose format
-export def list-items-conditional [] {
-  let items = http get "https://api.example.com/items"
-  if (is-toon-enabled) {
-    $items | to toon
-  } else {
-    $items | to json --indent 2
-  }
+  $items | to-fdf
 }
 ```
 
-**Environment variable:**
-- `MCP_TOON=true`: Enable TOON encoding (default: `false` - uses JSON)
+`to-fdf` accepts tables or JSON strings (e.g. `gh --json` output). Error messages,
+single objects, and formatted text pass through unchanged.
 
 **Specification:**
-- Based on [TOON Specification v2.0](https://github.com/toon-format/spec/blob/main/SPEC.md)
-- See [https://toonformat.dev](https://toonformat.dev) for format details and use cases
+- Based on [FDF/1 Flat Data Frame](https://github.com/weaming/ai-box/go/fdf)
 
 **Example output comparison:**
 
@@ -198,10 +181,11 @@ export def list-items-conditional [] {
   }
 ]
 
-# TOON output (same data, fewer tokens)
-[2]{active,id,name}:
-  true,1,Alice
-  false,2,Bob
+# FDF output (same data, fewer tokens)
+@FDF1|rows=2
+active:b|id:i|name:s
+true|1|Alice
+false|2|Bob
 ```
 
 ---
@@ -342,9 +326,9 @@ def format-stock-output [data: record] { }
 - Domain-specific modules: `geocoding.nu`, `session.nu`, etc.
 
 **Shared Libraries:**
-- `_common/toon.nu`: Shared TOON encoder for token-efficient output (optional)
-  - Import with: `use ../_common/toon.nu *`
-  - See [Tool Output Format](#optional-toon-format) section for usage
+- `_common/fdf.nu`: Shared FDF/1 encoder for token-efficient output (optional)
+  - Import with: `use ../_common/fdf.nu *`
+  - See [Tool Output Format](#optional-fdf-format) section for usage
 
 #### Open/Closed Principle (OCP)
 **Design for extension without modification:**
