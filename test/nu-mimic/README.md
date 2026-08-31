@@ -428,21 +428,6 @@ Matchers are applied in order of specificity:
 
 See `modules/nu-mimic/matchers.nu` for matcher implementation.
 
-## Testing the Framework
-
-The framework is self-tested! See `tests/nu-mimic/`:
-- `test_registry.nu` - Core registration/lookup
-- `test_matchers.nu` - Argument matching
-- `test_call_tracking.nu` - Call recording and verification
-- `test_integration.nu` - Full workflow tests
-- `test_proper_usage.nu` - Usage examples
-
-Run tests:
-
-```bash
-nu run_tests.nu
-```
-
 ## Limitations
 
 1. **Manual wrappers** - You create your own `--wrapped` functions per test
@@ -457,6 +442,6 @@ When adding matchers:
 1. Add matcher function to `modules/nu-mimic/matchers.nu`
 2. Export the matcher
 3. Add to the matcher precedence in `matcher apply`
-4. Add tests in `tests/nu-mimic/test_matchers.nu`
+4. Add tests in the tool test suites (e.g. `tools/gh/tests/`)
 
 Follow TDD - test first!

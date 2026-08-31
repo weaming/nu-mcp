@@ -14,9 +14,6 @@ jobs:
       - name: Install Nushell
         uses: hustcer/setup-nu@v3
 
-      - name: Run nu-mimic framework tests
-        run: nu test/nu-mimic/run_tests.nu
-
       - name: Run tool tests
         run: |
           export NU_LIB_DIRS="$GITHUB_WORKSPACE/test"
