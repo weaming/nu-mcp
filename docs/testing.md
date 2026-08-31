@@ -3,12 +3,8 @@
 ## Testing Individual Modules
 ```bash
 # Test a specific module function
-cd tools/weather
-nu -c "use formatters.nu *; format_temperature 25.5"
-
-# Test module independently
-cd tools/finance
-nu -c "use utils.nu *; calculate_price_change 100.0 95.0"
+cd tools/gh
+nu -c "use formatters.nu *; format-workflow-list [{name: 'CI'}]"
 ```
 
 ## Testing Complete Tools
@@ -17,15 +13,14 @@ nu -c "use utils.nu *; calculate_price_change 100.0 95.0"
 
 ```bash
 # Test tool discovery
-nu tools/weather/mod.nu list-tools
+nu tools/gh/mod.nu list-tools
 
 # Test tool execution - ALWAYS use call-tool
-nu tools/weather/mod.nu call-tool get_weather '{"location": "London"}'
-nu tools/finance/mod.nu call-tool get_ticker_price '{"symbol": "AAPL"}'
-nu tools/c67/mod.nu call-tool resolve_library_id '{"libraryName": "next.js"}'
+nu tools/gh/mod.nu call-tool list_workflows '{}'
+nu tools/tmux/mod.nu call-tool list_sessions '{}'
 
 # WRONG - Do not call internal functions directly for testing
-# nu -c "use tools/finance/yahoo_api.nu *; get_validated_stock_info 'AAPL'"
+# nu -c "use tools/gh/utils.nu *; run-gh ['workflow' 'list']"
 # This bypasses the actual tool flow and may give false results
 ```
 

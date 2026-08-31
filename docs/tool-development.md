@@ -20,7 +20,7 @@ This guide covers everything you need to know about developing tools for nu-mcp,
 ## Quick Start
 
 **Before you start:**
-1. Use Context7 to research APIs/libraries you'll interact with
+1. Research APIs/libraries you'll interact with (e.g. via `gh api`, library docs)
 2. Create a planning note or task in your project tracker
 3. Create a feature branch: `git checkout -b feature/<tool-name>`
 
@@ -49,8 +49,8 @@ The nu-mcp server automatically discovers tools at startup by:
 **Discovery behavior:**
 ```
 tools/
-├── weather/           # ✅ Discovered (has mod.nu)
-├── finance/           # ✅ Discovered (has mod.nu)
+├── gh/                # ✅ Discovered (has mod.nu)
+├── tmux/              # ✅ Discovered (has mod.nu)
 ├── broken_tool/       # ❌ Skipped (no mod.nu)
 └── data.json          # ❌ Ignored (not a directory)
 ```
@@ -104,11 +104,11 @@ Content::text(output)
 **Correct output examples:**
 
 ```nushell
-# Plain text output (like weather tool)
-"Weather in London: 15°C, Partly cloudy"
+# Plain text output
+"Session tmux-tasks: 3 windows, 12 panes"
 
-# JSON output (like most tools)
-{city: "London", temp: 15} | to json
+# JSON output
+{repo: "weaming/nu-mcp", pr: 42} | to json
 
 # Structured data as JSON string
 {items: [{name: "app1"}, {name: "app2"}]} | to json --indent 2
@@ -192,19 +192,11 @@ false|2|Bob
 
 ## Pre-Implementation Workflow
 
-### 1. Research with Context7
+### 1. Research
 
-**ALWAYS** use Context7 to research relevant libraries and APIs before writing code:
-
-```
-Use context7_resolve_library_id to find the library
-Use context7_get_library_docs to get documentation for:
-- External APIs you'll be calling
-- Nushell standard library functions
-- Any third-party integrations
-```
-
-This ensures you use current best practices and correct API patterns.
+Research the relevant libraries and APIs before writing code (via `gh api`,
+official docs, or library documentation) to ensure you use current best
+practices and correct API patterns.
 
 ### 2. Create a Planning Document
 
@@ -237,31 +229,31 @@ Never commit directly to main. All tool development should happen in feature bra
 ```nushell
 # ✅ Correct - Tool names in snake_case
 {
-    name: "get_weather"        # Good
-    name: "sync_application"   # Good
+    name: "list_workflows"     # Good
     name: "list_sessions"      # Good
+    name: "send_and_capture"   # Good
 }
 
 # ❌ Incorrect
 {
-    name: "getWeather"         # Wrong - camelCase
-    name: "sync-application"   # Wrong - kebab-case
-    name: "ListSessions"       # Wrong - PascalCase
+    name: "listWorkflows"      # Wrong - camelCase
+    name: "list-workflows"     # Wrong - kebab-case
+    name: "ListWorkflows"      # Wrong - PascalCase
 }
 ```
 
 **Function Names (Nushell internal)**: Use `kebab-case`
 ```nushell
 # ✅ Correct - Functions in kebab-case
-export def get-current-weather [lat: float, lon: float] { }
+export def list-workflow-runs [--status: string] { }
 export def validate-api-response [response: record] { }
-def format-temperature [temp: float] { }
-def build-api-url [params: record] { }
+def format-workflow-runs [runs: list] { }
+def build-gh-args [params: record] { }
 
 # ❌ Incorrect
-export def get_current_weather [lat: float, lon: float] { }  # Wrong - snake_case
-export def getCurrentWeather [lat: float, lon: float] { }    # Wrong - camelCase
-export def ValidateApiResponse [response: record] { }        # Wrong - PascalCase
+export def list_workflow_runs [--status: string] { }  # Wrong - snake_case
+export def listWorkflowRuns [--status: string] { }    # Wrong - camelCase
+export def ValidateApiResponse [response: record] { } # Wrong - PascalCase
 ```
 
 **Why This Matters:**
@@ -377,13 +369,13 @@ export def validate-api-response [response: any] {
 
 ```nushell
 # api.nu - Only export high-level operations (kebab-case function names)
-export def get-weather-data [lat: float, lon: float] {
+export def list-workflow-runs [--status: string] {
     # Implementation uses private helpers
-    let url = (build-api-url $lat $lon)  # Private helper (kebab-case)
-    fetch-and-validate $url              # Private helper (kebab-case)
+    let args = (build-gh-args ...)  # Private helper (kebab-case)
+    run-and-validate $args         # Private helper (kebab-case)
 }
 
-# Don't export: build-api-url, fetch-and-validate
+# Don't export: build-gh-args, run-and-validate
 # These are internal implementation details
 ```
 
@@ -392,9 +384,9 @@ export def get-weather-data [lat: float, lon: float] {
 
 ```nushell
 # ✅ Good: Function accepts generic record with required fields (kebab-case)
-export def format-weather [data: record] {
-    # Expects data.temperature, data.humidity, etc.
-    # Doesn't care if it came from OpenMeteo, Weather.gov, etc.
+export def format-workflow-run [run: record] {
+    # Expects run.databaseId, run.status, etc.
+    # Doesn't care which GitHub API version produced it
 }
 
 # ✅ Good: Validation returns standard structure (kebab-case)
@@ -409,16 +401,19 @@ Tool modules can contain additional helper files alongside `mod.nu`:
 
 ```
 tools/
-├── weather/
+├── gh/
 │   ├── mod.nu          # Entry point implementing list-tools/call-tool
-│   ├── geocoding.nu    # Location services and coordinate lookup
-│   ├── api.nu          # Weather API interactions and validation
+│   ├── utils.nu        # gh CLI wrapper and parameter helpers
+│   ├── prs.nu          # PR operations
+│   ├── workflows.nu    # Workflow operations
+│   ├── releases.nu     # Release operations
 │   └── formatters.nu   # Data formatting and conversion utilities
-└── finance/
+└── tmux/
     ├── mod.nu          # Entry point implementing list-tools/call-tool
-    ├── yahoo_api.nu    # Yahoo Finance API interactions and validation
-    ├── utils.nu        # Financial calculations and formatting utilities
-    └── formatters.nu   # Stock data display formatting and error handling
+    ├── core.nu         # Core tmux command helpers
+    ├── session.nu      # Session and pane listing
+    ├── search.nu       # Pane search functions
+    └── commands.nu     # Command execution and capture
 ```
 
 ### Common Patterns in Existing Tools
@@ -686,7 +681,7 @@ def "main list-tools" [] {
 ```
 
 ### Schema Best Practices
-1. **Descriptive names**: Use clear, action-oriented names (`get_weather`, `sync_application`)
+1. **Descriptive names**: Use clear, action-oriented names (`list_workflows`, `send_and_capture`)
 2. **Detailed descriptions**: Write for LLM consumption - be explicit about behavior
 3. **Appropriate types**: Use correct JSON Schema types
 4. **Constraints**: Add `minimum`, `maximum`, `enum`, `pattern` where applicable
@@ -726,7 +721,7 @@ Follow these milestones iteratively for each new tool:
 
 ### Phase 1: Planning & Research (Already Done)
 - Created planning document
-- Researched with Context7
+- Researched the target API/CLI
 - Created feature branch
 
 ### Phase 2: Milestone 1 - Basic Structure
@@ -774,11 +769,8 @@ def "main call-tool" [
 
 ### Phase 3: Milestone 2 - API Integration
 
-**Research with Context7:**
-```
-Use Context7 to research the external API or CLI tool
-Document findings in the implementation plan
-```
+**Research the target API or CLI:**
+Document findings in the implementation plan before writing code.
 
 **Create api.nu (if needed):**
 ```nushell
@@ -1115,22 +1107,18 @@ nu tools/<tool-name>/mod.nu call-tool unknown_tool '{}'
 ### Testing Individual Modules
 ```bash
 # Test a specific module function
-cd tools/weather
-nu -c "use formatters.nu *; format-temperature 25.5"
-
-# Test module independently
-cd tools/finance
-nu -c "use utils.nu *; calculate-price-change 100.0 95.0"
+cd tools/gh
+nu -c "use formatters.nu *; format-workflow-list [{name: 'CI'}]"
 ```
 
 ### Testing Complete Tools
 ```bash
 # Test tool discovery
-nu tools/weather/mod.nu list-tools
+nu tools/gh/mod.nu list-tools
 
 # Test tool execution
-nu tools/weather/mod.nu call-tool get_weather '{"location": "London"}'
-nu tools/finance/mod.nu call-tool get_ticker_price '{"symbol": "AAPL"}'
+nu tools/gh/mod.nu call-tool list_workflows '{}'
+nu tools/tmux/mod.nu call-tool list_sessions '{}'
 ```
 
 ### Integration Testing (After Build & Install)
@@ -1512,7 +1500,7 @@ Before committing your tool, verify:
 
 ## Final Workflow Summary
 
-1. **Research** → Use Context7 for libraries/APIs
+1. **Research** → Research the target libraries/APIs
 2. **Plan** → Create planning document
 3. **Branch** → Create feature branch
 4. **Implement** → Follow milestones iteratively:
@@ -1537,7 +1525,7 @@ Before committing your tool, verify:
 - **JSON Schema**: https://json-schema.org/
 - **MCP Specification**: https://spec.modelcontextprotocol.io/
 - **Existing Tools**: See `tools/` directory for examples
-- **Context7**: Use for API/library research
+- **gh CLI**: Useful for API research and repo operations
 
 ---
 

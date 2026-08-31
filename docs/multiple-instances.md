@@ -5,19 +5,18 @@ You can run multiple instances with different tool sets and sandbox directories.
 ## Example Multi-Instance Setup
 
 ```yaml
-# Weather and location services
-nu-mcp-weather:
+# GitHub tools with repo access
+nu-mcp-gh:
   command: "nu-mcp"
   args:
-    - "--tools-dir=/opt/mcp-tools/weather"
-    - "--add-path=/tmp/weather-workspace"
+    - "--tools-dir=/opt/mcp-tools/gh"
+    - "--add-path=/workspace/repos"
 
-# Financial data services
-nu-mcp-finance:
+# Tmux tools with terminal access
+nu-mcp-tmux:
   command: "nu-mcp"
   args:
-    - "--tools-dir=/opt/mcp-tools/finance"
-    - "--add-path=/tmp/finance-workspace"
+    - "--tools-dir=/opt/mcp-tools/tmux"
 
 # Development tools with additional paths
 nu-mcp-dev:
@@ -30,7 +29,7 @@ nu-mcp-dev:
 
 ## Benefits of Multiple Instances
 
-- **Tool Organization**: Group related functionality (weather, finance, development)
+- **Tool Organization**: Group related functionality (gh, tmux, development)
 - **Conflict Avoidance**: Each instance provides distinct tools without name collisions
 - **Security Isolation**: Different instances can have different accessible paths
 - **Clear Interface**: Clients see focused tool sets rather than everything mixed together

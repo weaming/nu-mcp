@@ -10,7 +10,7 @@ This project exposes Nushell as an MCP server using the official Rust SDK (`rmcp
 - Extensible tool system via Nushell scripts in modular directories
 - Uses the official Model Context Protocol Rust SDK
 - Security sandbox with intelligent path validation and caching
-- Catalog of useful MCP tools for GitHub, Tmux, Context7, Weather, Finance and more
+- Catalog of useful MCP tools for GitHub and Tmux
 
 ## Quick Start
 
@@ -38,9 +38,6 @@ The `tools/` directory contains a growing catalog of useful MCP tools:
 
 - **GitHub** (`tools/gh/`) - PR, workflow, and release management via gh CLI
 - **Tmux** (`tools/tmux/`) - Tmux session and pane management with intelligent command execution
-- **Context7** (`tools/c67/`) - Up-to-date library documentation and code examples from Context7
-- **Weather** (`tools/weather/`) - Current weather and forecasts via Open-Meteo
-- **Finance** (`tools/finance/`) - Stock price lookups via Yahoo Finance
 
 ## Configuration
 
