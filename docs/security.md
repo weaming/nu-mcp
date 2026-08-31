@@ -31,8 +31,6 @@ Some commands use path-like strings that aren't filesystem paths (API endpoints,
 
 ### Whitelisted Patterns
 - `gh api /repos/...` - GitHub API endpoints
-- `kubectl get /apis/...` - Kubernetes resource paths
-- `argocd app get /argocd/...` - ArgoCD application paths
 - `curl https://...` - HTTP URLs
 - `http get https://...` - Nushell HTTP commands
 

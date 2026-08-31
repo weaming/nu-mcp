@@ -7,7 +7,7 @@
 //! The module uses a two-tier validation approach:
 //!
 //! 1. **Whitelist Check**: Commands matching safe patterns bypass path validation
-//!    - API commands (gh api, kubectl get /apis, argocd app, etc.)
+//!    - API commands (gh api, etc.)
 //!    - HTTP clients with URLs
 //!    - Other tools with non-filesystem path arguments
 //!

@@ -34,12 +34,3 @@ language = "system"
 entry = "cargo test"
 stages = ["pre-push"]
 pass_filenames = false
-
-[[repos.hooks]]
-id = "alejandra"
-name = "alejandra check"
-language = "system"
-entry = "alejandra --check"
-files = "\\.nix$"
-pass_filenames = true
-stages = ["pre-commit"]

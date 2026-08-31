@@ -33,9 +33,7 @@ This module implements filesystem path validation for the nu-mcp sandbox. Comman
 
 ✅ **Safe to add:**
 - API endpoints: `gh api /repos/owner/repo`
-- Resource identifiers: `kubectl get /apis/apps/v1`
 - URLs: `curl https://api.example.com`
-- Resource paths: `argocd app get /argocd/myapp`
 - System info with NO file arguments: `docker ps`, `top`, `ps`, `df`
 - Git read-only: `git log`, `git status` (read-only even with pathspecs)
 - Network tools: `ping`, `dig`, `traceroute`
@@ -152,8 +150,6 @@ Add clear comments in the pattern file:
 ### API Endpoints
 Commands that accept URL-like paths for API access:
 - `gh api /repos/...`
-- `kubectl get /apis/...`
-- `argocd app get /argocd/...`
 
 ### HTTP Clients
 Commands that fetch URLs (not filesystem paths):

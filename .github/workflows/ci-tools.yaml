@@ -1,15 +1,9 @@
----
 name: CI Tools
 on:
   workflow_dispatch:
   push:
-    branches-ignore:
-      - main
     paths:
       - "tools/**"
-      - "nix/ci.nix"
-      - "flake.nix"
-      - "flake.lock"
 jobs:
   test-tools:
     runs-on: ubuntu-latest
@@ -17,8 +11,13 @@ jobs:
       - name: Code checkout
         uses: actions/checkout@v6
 
-      - name: Install Determinate Nix
-        uses: DeterminateSystems/nix-installer-action@main
+      - name: Install Nushell
+        uses: hustcer/setup-nu@v3
+
+      - name: Run nu-mimic framework tests
+        run: nu test/nu-mimic/run_tests.nu
 
       - name: Run tool tests
-        run: nix develop .#ci --command run-tool-tests
+        run: |
+          export NU_LIB_DIRS="$GITHUB_WORKSPACE/test"
+          nu tools/run_all_tests.nu

@@ -48,7 +48,6 @@ __pycache__/
 *.log
 
 target/
-result
 tarpaulin-report.*
 .pre-commit-config.yaml
 .vscode/

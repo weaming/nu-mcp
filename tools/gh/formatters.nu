@@ -36,7 +36,7 @@ def format-pr-state [state: string is_draft: bool] {
   if $is_draft {
     "draft"
   } else {
-    $state | str downcase
+    $state | str lowercase
   }
 }
 

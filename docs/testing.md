@@ -22,10 +22,10 @@ nu tools/weather/mod.nu list-tools
 # Test tool execution - ALWAYS use call-tool
 nu tools/weather/mod.nu call-tool get_weather '{"location": "London"}'
 nu tools/finance/mod.nu call-tool get_ticker_price '{"symbol": "AAPL"}'
-nu tools/argocd/mod.nu call-tool list_applications '{"namespace": "argocd"}'
+nu tools/c67/mod.nu call-tool resolve_library_id '{"libraryName": "next.js"}'
 
 # WRONG - Do not call internal functions directly for testing
-# nu -c "use tools/argocd/cluster.nu *; resolve {server: 'https://localhost:8080'}"
+# nu -c "use tools/finance/yahoo_api.nu *; get_validated_stock_info 'AAPL'"
 # This bypasses the actual tool flow and may give false results
 ```
 

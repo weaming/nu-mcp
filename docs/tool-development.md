@@ -455,7 +455,7 @@ tool-name/
 - Stateless operations
 - Simple data transformations
 
-#### Pattern 2: Complex Tool with Safety Modes (Kubernetes, ArgoCD)
+#### Pattern 2: Complex Tool with Safety Modes (gh, tmux)
 **Structure:**
 ```
 tool-name/
@@ -470,7 +470,7 @@ tool-name/
 **Characteristics:**
 - Multiple safety modes (read-only, non-destructive, destructive)
 - Environment variable configuration
-- CLI tool wrapping (kubectl, argocd)
+- CLI tool wrapping (gh, tmux)
 - Extensive error handling
 - Permission checking before execution
 
@@ -1107,8 +1107,8 @@ cargo run -- --tools-dir ./tools
 
 **During development, you can ONLY test via direct Nushell tool calls until the MCP server and tools have been installed on your PATH.**
 
-The MCP server uses tools from the Nix store (immutable paths like `/nix/store/.../mcp-tools-X.X.X/`), which means:
-- Changes you make to `tools/` are NOT used by the MCP server until rebuilt and installed
+The MCP server loads tools from the directory passed via `--tools-dir`, which means:
+- Changes you make to `tools/` ARE used by the MCP server when you point it at the source directory (`--tools-dir=./tools`)
 - You MUST test via direct Nushell calls during development
 - Only after building and installing can you test via the MCP server
 
@@ -1154,8 +1154,8 @@ nu tools/finance/mod.nu call-tool get_ticker_price '{"symbol": "AAPL"}'
 **ONLY after building and installing to PATH can you test via MCP:**
 
 ```bash
-# Build and install (this updates the Nix store)
-nix build  # or equivalent install command
+# Build and install
+cargo install --path .
 
 # Now MCP server tools will use your changes
 # Test via MCP client or tool that connects to MCP server
@@ -1296,8 +1296,8 @@ export def mask-secrets [data: record] {
 
 ## Advanced Patterns
 
-### Pattern: CLI Wrapping (Kubernetes, ArgoCD)
-When wrapping CLI tools like `kubectl`:
+### Pattern: CLI Wrapping (gh, tmux)
+When wrapping CLI tools like `gh`:
 
 ```nushell
 # utils.nu

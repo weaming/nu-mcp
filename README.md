@@ -10,7 +10,7 @@ This project exposes Nushell as an MCP server using the official Rust SDK (`rmcp
 - Extensible tool system via Nushell scripts in modular directories
 - Uses the official Model Context Protocol Rust SDK
 - Security sandbox with intelligent path validation and caching
-- Catalog of useful MCP tools for Kubernetes, ArgoCD, Tmux, Context7 and more
+- Catalog of useful MCP tools for GitHub, Tmux, Context7, Weather, Finance and more
 
 ## Quick Start
 
@@ -36,10 +36,11 @@ Combine both core command execution and extension tools.
 
 The `tools/` directory contains a growing catalog of useful MCP tools:
 
-- **Kubernetes** (`tools/k8s/`) - Complete kubectl/Helm interface with 22 tools and three-tier safety model
-- **ArgoCD** (`tools/argocd/`) - ArgoCD application and resource management via HTTP API
+- **GitHub** (`tools/gh/`) - PR, workflow, and release management via gh CLI
 - **Tmux** (`tools/tmux/`) - Tmux session and pane management with intelligent command execution
 - **Context7** (`tools/c67/`) - Up-to-date library documentation and code examples from Context7
+- **Weather** (`tools/weather/`) - Current weather and forecasts via Open-Meteo
+- **Finance** (`tools/finance/`) - Stock price lookups via Yahoo Finance
 
 ## Configuration
 
@@ -56,7 +57,7 @@ The `tools/` directory contains a growing catalog of useful MCP tools:
 ```yaml
 nu-mcp:
   command: "nu-mcp"
-  args: ["--tools-dir=./tools", "--add-path=/tmp", "--add-path=/nix/store"]
+  args: ["--tools-dir=./tools", "--add-path=/tmp", "--add-path=/opt/homebrew"]
   env:
     MCP_NU_MCP_TIMEOUT: "120"  # 2 minute timeout
 ```
@@ -92,8 +93,6 @@ DESTRUCTIVE OPERATION - ALWAYS ASK USER FOR EXPLICIT CONFIRMATION BEFORE EXECUTI
 
 **Tools with destructive capabilities:**
 - **gh**: `delete_release` (deletes release + binaries), `close_pr` with `delete_branch`
-- **k8s**: `kube_delete`, `helm_uninstall`, `kube_cleanup`, `kube_scale` (to 0)
-- **ArgoCD**: `delete_application`, `sync_application` with `prune: true`
 
 **LLM Agents**: These warnings instruct LLMs to ALWAYS ask for user permission before executing destructive operations. Never execute these tools without explicit user confirmation.
 
@@ -101,84 +100,23 @@ DESTRUCTIVE OPERATION - ALWAYS ASK USER FOR EXPLICIT CONFIRMATION BEFORE EXECUTI
 
 ## Installation
 
-### Via Nix
+### Via Cargo
 
-#### As a Nix profile (standalone usage)
-
-You can install this flake as a Nix profile:
+Install from a local checkout:
 
 ```sh
-nix profile install github:ck3mp3r/nu-mcp
+cargo install --path .
 ```
 
-Or, if you have a local checkout:
+### Tools
+
+Tools are Nushell scripts in the `tools/` directory. Point nu-mcp at them:
 
 ```sh
-nix profile install path:/absolute/path/to/nu-mcp
+nu-mcp --tools-dir=./tools
 ```
 
-#### Installing Tools
-
-Tools are available as individual packages or as a complete collection:
-
-##### Individual Tools
-```sh
-# Kubernetes tool only
-nix profile install github:ck3mp3r/nu-mcp#k8s-mcp-tools
-
-# ArgoCD tool only
-nix profile install github:ck3mp3r/nu-mcp#argocd-mcp-tools
-
-# Weather tool only
-nix profile install github:ck3mp3r/nu-mcp#weather-mcp-tools
-
-# Finance tool only
-nix profile install github:ck3mp3r/nu-mcp#finance-mcp-tools
-
-# Tmux tool only
-nix profile install github:ck3mp3r/nu-mcp#tmux-mcp-tools
-
-# Context7 (c67) tool only
-nix profile install github:ck3mp3r/nu-mcp#c67-mcp-tools
-```
-
-##### Complete Tool Collection
-```sh
-# All available tools
-nix profile install github:ck3mp3r/nu-mcp#mcp-tools
-```
-
-Tools are installed to `~/.nix-profile/share/nushell/mcp-tools/`.
-
-#### As an overlay in your own flake
-
-Add this flake as an input and overlay in your `flake.nix`:
-
-```nix
-{
-  inputs.nu-mcp.url = "github:ck3mp3r/nu-mcp";
-  # ...
-  outputs = { self, nixpkgs, nu-mcp, ... }:
-    let
-      overlays = [ nu-mcp.overlays.default ];
-      pkgs = import nixpkgs { inherit system overlays; };
-    in {
-      # Now pkgs.nu-mcp is available
-      packages.x86_64-linux.nu-mcp = pkgs.nu-mcp;
-    };
-}
-```
-
-You can now use `pkgs.nu-mcp` in your own packages, devShells, or CI.
-
-### Via Homebrew (macOS and Linux)
-
-Install from the tap:
-
-```sh
-brew tap ck3mp3r/nu-mcp https://github.com/ck3mp3r/nu-mcp
-brew install nu-mcp
-```
+Or copy the `tools/` directory anywhere and pass its path with `--tools-dir`.
 
 ## Development
 - See [modelcontextprotocol/rust-sdk](https://github.com/modelcontextprotocol/rust-sdk) for SDK details and advanced usage.

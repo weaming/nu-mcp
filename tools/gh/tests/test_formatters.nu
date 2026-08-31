@@ -51,7 +51,7 @@ export def "test format-release-list shows relative time" [] {
 
   # Recent release (within last day)
   let now = date now
-  let recent_time = $now - 2hr | format date "%Y-%m-%dT%H:%M:%SZ"
+  let recent_time = $now - 2hr | format date "%Y-%m-%dT%H:%M:%S"
 
   let releases = [
     {tagName: "v1.0.0" name: "Release v1.0.0" isDraft: false isPrerelease: false isLatest: true createdAt: $recent_time publishedAt: $recent_time}
